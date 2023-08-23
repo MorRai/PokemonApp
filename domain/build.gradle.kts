@@ -10,4 +10,5 @@ java {
 
 dependencies {
     implementation ("androidx.paging:paging-common:3.2.0")
+    implementation ("io.reactivex.rxjava3:rxjava:3.1.2")
 }

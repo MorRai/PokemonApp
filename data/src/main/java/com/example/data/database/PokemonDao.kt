@@ -21,7 +21,7 @@ internal interface PokemonDao {
     @Query("SELECT * from pokemons_table")
     fun getPokemons(): PagingSource<Int,PokemonEntity>
 
-    @Query("Delete From recipe_database")
-    suspend fun clearAllPokemons()
+    @Query("Delete From pokemons_table")
+    fun clearAllPokemons()
 
 }

@@ -15,8 +15,11 @@ internal fun PokemonDTO.toDomainModel(image: String): Pokemon {
     )
 }
 
+internal fun List<Pokemon>.toEntityModels(): List<PokemonEntity> {
+    return map { it.toEntityModels() }
+}
 
-internal fun Pokemon.toDomainModels(): PokemonEntity {
+internal fun Pokemon.toEntityModels(): PokemonEntity {
     return PokemonEntity(
         id = id,
         name = name,

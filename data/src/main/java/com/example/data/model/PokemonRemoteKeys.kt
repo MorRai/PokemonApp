@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "remote_key")
+@Entity(tableName = "pokemon_remote_key")
 data class PokemonRemoteKeys( @PrimaryKey(autoGenerate = false)
                        @ColumnInfo(name = "pokemon_id")
                        val pokemonID: Int,

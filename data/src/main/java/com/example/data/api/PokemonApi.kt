@@ -8,12 +8,12 @@ import retrofit2.http.Query
 
 internal interface PokemonApi {
     @GET("pokemon/{id}")
-    suspend fun getPokemon(
+    fun getPokemon(
         @Path("id") id: Int,
     ): PokemonDTO
 
     @GET("pokemon")
-    suspend fun getPokemons(
+    fun getPokemons(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
     ): PokemonsDTO
