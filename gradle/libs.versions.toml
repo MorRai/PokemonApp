@@ -1,0 +1,25 @@
+[versions]
+minSdk = "28"
+compileSdk = "33"
+targetSdk = "33"
+
+
+androidx-room =  "2.5.2"
+koin-version = "3.3.2"
+retrofit-version = "2.9.0"
+
+[libraries]
+
+androidx-room-runtime  = {module = "androidx.room:room-runtime", version.ref = "androidx-room"}
+androidx-room-ktx  = {module = "androidx.room:room-ktx", version.ref = "androidx-room"}
+androidx-room-compiler  = {module = "androidx.room:room-compiler", version.ref = "androidx-room"}
+
+retrofit-retrofit = {module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit-version"}
+retrofit-converter-gson  = {module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit-version"}
+
+koin-android  = {module = "io.insert-koin:koin-android", version.ref = "koin-version"}
+
+
+[bundles]
+androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
+androidx-retrofit = ["retrofit-retrofit", "retrofit-converter-gson"]

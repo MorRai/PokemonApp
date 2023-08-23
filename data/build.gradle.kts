@@ -1,6 +1,8 @@
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -31,6 +33,19 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
+    implementation ("androidx.paging:paging-common:3.2.0")
+    implementation ("androidx.room:room-paging:2.5.2")
+    implementation ("androidx.paging:paging-rxjava2:3.2.0")
+    implementation  ("androidx.room:room-rxjava2:2.5.2")
+
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.bundles.androidx.room)
+
+    implementation(libs.bundles.androidx.retrofit)
+
+    implementation(libs.koin.android)
 
     implementation ("androidx.core:core-ktx:1.7.0")
     implementation  ("androidx.appcompat:appcompat:1.6.1")
