@@ -25,7 +25,8 @@ internal class PokemonsRemoteMediatorRX(
     val pageSize = 20 //вынести в параметр
 
     companion object {
-        const val INVALID_PAGE = 0
+        const val INVALID_PAGE = -1
+        const val SECOND_PAGE = 2
     }
 
     override fun initializeSingle(): Single<InitializeAction> {
@@ -79,7 +80,7 @@ internal class PokemonsRemoteMediatorRX(
         loadType: LoadType,
         state: PagingState<Int, PokemonEntity>,
     ): Single<MediatorResult> {
-        val pageSingle: Single<Int> = when (loadType) {
+        return when (loadType) {
             LoadType.REFRESH -> {
                 Log.e("page", "REFRESH")
                 getRemoteKeyClosestToCurrentPosition(state)
@@ -98,13 +99,16 @@ internal class PokemonsRemoteMediatorRX(
             LoadType.APPEND -> {
                 Log.e("page", "APPEND")
                 getRemoteKeyForLastItem(state)
-                    .map { remoteKeys ->
-                        remoteKeys.orElse(null)?.nextKey ?: INVALID_PAGE
+                    .map {
+                        val remoteKeys = it.orElse(null)
+                        if (remoteKeys == null) {
+                            SECOND_PAGE
+                        } else {
+                            remoteKeys.nextKey ?: INVALID_PAGE
+                        }
                     }
             }
-        }
-
-        return pageSingle.flatMap { page ->
+        }.flatMap { page ->
             Log.e("page", page.toString())
             if (page == INVALID_PAGE) {
                 Single.just(MediatorResult.Success(endOfPaginationReached = true) as MediatorResult)
@@ -156,8 +160,8 @@ internal class PokemonsRemoteMediatorRX(
                     }
             }
         }.onErrorReturn {
+            Log.e("PokemonsRemoteMediatorRX", "Error in loadSingle: ${it.message}")
             MediatorResult.Error(it)
         }
     }
-
 }

@@ -13,9 +13,11 @@ internal val pokemonMediatorModule = module {
         @OptIn(ExperimentalPagingApi::class)
         Pager(
         config = PagingConfig(
-            pageSize = 20, prefetchDistance = 10,
-            initialLoadSize = 20,
-        ),
+            pageSize = 20,
+            enablePlaceholders = true,
+            maxSize = 30,
+            prefetchDistance = 5,
+            initialLoadSize = 40),
         pagingSourceFactory = { get<PokemonDatabase>().pokemonDao().getPokemons() },
         remoteMediator = PokemonsRemoteMediatorRX(get(), get()),
     )

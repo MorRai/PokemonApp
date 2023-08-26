@@ -13,6 +13,7 @@ import com.example.domain.model.Pokemon
 import com.example.domain.model.Response
 import com.example.domain.repository.PokemonRepository
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 
@@ -25,15 +26,15 @@ internal class PokemonRepositoryImpl(
         return pokemonPager.flowable
             .map { pagingData ->
                 pagingData.map { it.toDomainModels() }
-            }.subscribeOn(Schedulers.io())
+            }
     }
 
-
-    override fun getPokemonDetail(pokemonId: Int): Flowable<Response<Pokemon>> {
+    override fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>> {
         return pokemonDatabase.pokemonDao().getPokemon(pokemonId)
+            .subscribeOn(Schedulers.io())
             .map { pokemonEntity ->
                 // Преобразовать PokemonEntity в Response.Success<Pokemon>
-                Response.Success(pokemonEntity.toDomainModels()) as Response<Pokemon>
+                 Response.Success(pokemonEntity.toDomainModels()) as Response<Pokemon>
             }
             .onErrorResumeNext {
                 // Попробовать получить данные из Retrofit
@@ -48,7 +49,7 @@ internal class PokemonRepositoryImpl(
                     }
 
                 retrofitFlowable
-            }.toFlowable()
+            }
 
     }
 

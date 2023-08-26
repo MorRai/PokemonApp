@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">PokemonApp</string>
+    <string name="pokemon_weight">%s kg</string>
+    <string name="pokemon_height">%s cm</string>
+    <string name="app_name">Pokemon App</string>
+    <string name="pokemon">Pokemon</string>
+    <string name="pokemon_list">Pokemon list</string>
+    <string name="type">type:</string>
+    <string name="weight">weight:</string>
+    <string name="height">height:</string>
 </resources>
