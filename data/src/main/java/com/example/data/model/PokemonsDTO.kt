@@ -11,7 +11,7 @@ internal data class PokemonDTO(
     val id: Int,
     val name: String,
     val image: String,
-    val types: List<TypeResponse>,
+    val types: List<TypeResponse>?,
     val weight: Int,
     val height: Int
 )

@@ -34,15 +34,15 @@ android {
 
 dependencies {
     implementation(project(":domain"))
-
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.5.2")
     implementation ("io.reactivex.rxjava3:rxjava:3.1.2")
     implementation ("io.reactivex.rxjava3:rxandroid:3.0.0")
 
     implementation ("androidx.paging:paging-runtime:3.2.0")
     implementation ("androidx.room:room-paging:2.5.2")
-    implementation ("androidx.paging:paging-rxjava2:3.2.0")
-    implementation  ("androidx.room:room-rxjava2:2.5.2")
-    implementation ("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
+    implementation ("androidx.paging:paging-rxjava3:3.2.0")
+    implementation  ("androidx.room:room-rxjava3:2.5.2")
+    implementation ("com.squareup.retrofit2:adapter-rxjava3:2.9.0")
 
     kapt(libs.androidx.room.compiler)
     implementation(libs.bundles.androidx.room)

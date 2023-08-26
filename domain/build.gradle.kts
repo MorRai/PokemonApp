@@ -11,4 +11,6 @@ java {
 dependencies {
     implementation ("androidx.paging:paging-common:3.2.0")
     implementation ("io.reactivex.rxjava3:rxjava:3.1.2")
+    implementation(libs.kotlinx.coroutine)
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-rx3:1.5.2")
 }

@@ -7,6 +7,19 @@ targetSdk = "33"
 androidx-room =  "2.5.2"
 koin-version = "3.3.2"
 retrofit-version = "2.9.0"
+androidx-navigation = "2.4.2"
+androidx-lifecycle = "2.4.1"
+coil-version = "1.4.0"
+swiperefreshlayout-version = "1.1.0"
+androidx-core = "1.7.0"
+androidx-appcompat = "1.4.1"
+android-material = "1.6.0"
+androidx-constraintlayout = "2.1.4"
+junit-version = "4.13.2"
+androidx-test-ext = "1.1.3"
+androidx-test-espresso = "3.4.0"
+kotlinx-coroutine = "1.5.2"
+
 
 [libraries]
 
@@ -14,12 +27,37 @@ androidx-room-runtime  = {module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx  = {module = "androidx.room:room-ktx", version.ref = "androidx-room"}
 androidx-room-compiler  = {module = "androidx.room:room-compiler", version.ref = "androidx-room"}
 
+androidx-lifecycle-viewmodel = {module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle"}
+androidx-lifecycle-livedata = {module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle"}
+
+androidx-navigation-fragment = {module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation"}
+androidx-navigation-ui = {module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation"}
+
+coil  = {module = "io.coil-kt:coil", version.ref = "coil-version"}
+
 retrofit-retrofit = {module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit-version"}
 retrofit-converter-gson  = {module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit-version"}
 
 koin-android  = {module = "io.insert-koin:koin-android", version.ref = "koin-version"}
 
+androidx-swiperefreshlayout  = {module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout-version"}
+
+androidx_core = {module = "androidx.core:core-ktx", version.ref = "androidx-core"}
+androidx-appcompat = {module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat"}
+android-material= {module = "com.google.android.material:material", version.ref = "android-material"}
+
+androidx-constraintlayout= {module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout"}
+
+junit = {module = "junit:junit", version.ref = "junit-version"}
+
+androidx-test-ext= {module = "androidx.test.ext:junit", version.ref = "androidx-test-ext"}
+
+kotlinx-coroutine = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine"}
+
+androidx-test-espresso= {module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso"}
 
 [bundles]
+androidx-navigation = ["androidx-navigation-fragment", "androidx-navigation-ui"]
+androidx-lifecycle = ["androidx-lifecycle-livedata", "androidx-lifecycle-viewmodel"]
 androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
 androidx-retrofit = ["retrofit-retrofit", "retrofit-converter-gson"]
