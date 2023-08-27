@@ -22,13 +22,13 @@ internal class PokemonsRemoteMediatorRX(
     private val pokemonDatabase: PokemonDatabase,
 ) : RxRemoteMediator<Int, PokemonEntity>() {
 
-    val pageSize = 20 //вынести в параметр
-
     companion object {
-        const val INVALID_PAGE = -1
-        const val SECOND_PAGE = 2
+        private const val INVALID_PAGE = -1
+        private const val SECOND_PAGE = 2
+        private val pageSize = 20
     }
 
+    // Initialize the refresh strategy based on cache time
     override fun initializeSingle(): Single<InitializeAction> {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
         return pokemonDatabase.pokemonRemoteKeysDao().getCreationTime()
@@ -76,20 +76,20 @@ internal class PokemonsRemoteMediatorRX(
         }.subscribeOn(Schedulers.io())
     }
 
+    // Load data based on load type
     override fun loadSingle(
         loadType: LoadType,
         state: PagingState<Int, PokemonEntity>,
     ): Single<MediatorResult> {
         return when (loadType) {
+            // strategy for initial load or manual refresh
             LoadType.REFRESH -> {
-                Log.e("page", "REFRESH")
                 getRemoteKeyClosestToCurrentPosition(state)
                     .map { remoteKeys ->
                         remoteKeys.orElse(null)?.nextKey?.minus(1) ?: 1
                     }
             }
             LoadType.PREPEND -> {
-                Log.e("page", "PREPEND")
                 getRemoteKeyForFirstItem(state)
                     .map { remoteKeys ->
                         remoteKeys.orElse(null)?.prevKey ?: INVALID_PAGE
@@ -97,7 +97,6 @@ internal class PokemonsRemoteMediatorRX(
 
             }
             LoadType.APPEND -> {
-                Log.e("page", "APPEND")
                 getRemoteKeyForLastItem(state)
                     .map {
                         val remoteKeys = it.orElse(null)
@@ -109,15 +108,17 @@ internal class PokemonsRemoteMediatorRX(
                     }
             }
         }.flatMap { page ->
-            Log.e("page", page.toString())
+            // Actual data loading and processing
             if (page == INVALID_PAGE) {
                 Single.just(MediatorResult.Success(endOfPaginationReached = true) as MediatorResult)
             } else {
+                // Load data from remote API
                 pokemonService.getPokemons(
                     offset = (page - 1) * pageSize,
                     limit = pageSize
                 ).subscribeOn(Schedulers.io())
                     .flatMap { pokemonsDTO ->
+                        // Fetch individual Pokemon details
                         val pokemonSingleList = pokemonsDTO.results
                             .map { pokemonResponse ->
                                 val id = pokemonResponse.url.split("/")
@@ -130,6 +131,7 @@ internal class PokemonsRemoteMediatorRX(
                     }.flatMap { pokemonList ->
                         val endOfPaginationReached = pokemonList.isEmpty()
                         Log.e("page", endOfPaginationReached.toString())
+                        // Handle data insertion into database
                         if (loadType == LoadType.REFRESH) {
                             pokemonDatabase.pokemonRemoteKeysDao().clearRemoteKeys()
                                 .subscribeOn(Schedulers.io()).subscribe()
@@ -146,12 +148,8 @@ internal class PokemonsRemoteMediatorRX(
                                 nextKey = nextKey
                             )
                         }
-                        Log.e("page", remoteKeys.toString())
                         pokemonDatabase.pokemonRemoteKeysDao().insertAll(remoteKeys)
                             .subscribeOn(Schedulers.io())
-                            .onErrorReturn {
-                                Log.e("page", remoteKeys.toString())
-                            }
                             .subscribe()
                         pokemonDatabase.pokemonDao()
                             .insert(pokemonList.toDomainModel().toEntityModels())
@@ -160,6 +158,7 @@ internal class PokemonsRemoteMediatorRX(
                     }
             }
         }.onErrorReturn {
+            // Handle error during data loading
             Log.e("PokemonsRemoteMediatorRX", "Error in loadSingle: ${it.message}")
             MediatorResult.Error(it)
         }

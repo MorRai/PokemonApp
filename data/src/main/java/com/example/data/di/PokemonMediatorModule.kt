@@ -21,6 +21,5 @@ internal val pokemonMediatorModule = module {
         pagingSourceFactory = { get<PokemonDatabase>().pokemonDao().getPokemons() },
         remoteMediator = PokemonsRemoteMediatorRX(get(), get()),
     )
-
     }
 }

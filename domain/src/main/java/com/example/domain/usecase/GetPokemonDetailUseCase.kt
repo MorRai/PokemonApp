@@ -7,8 +7,6 @@ import io.reactivex.rxjava3.core.Single
 
 class GetPokemonDetailUseCase(private val pokemonRepository: PokemonRepository) {
     operator fun invoke(pokemonId: Int): Single<Response<Pokemon>> {
-
          return   pokemonRepository.getPokemonDetail(pokemonId)
-
     }
 }

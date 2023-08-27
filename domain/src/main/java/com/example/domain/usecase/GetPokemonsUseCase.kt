@@ -9,5 +9,4 @@ class GetPokemonsUseCase(private val pokemonRepository: PokemonRepository) {
     operator fun invoke(): Flowable<PagingData<Pokemon>> {
         return pokemonRepository.getPokemon()
     }
-
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primaryColor">#F44336</color>
-    <color name="primaryLightColor">#FF7961</color>
-    <color name="primaryDarkColor">#BA000D</color>
-    <color name="secondaryColor">#00E676</color>
-    <color name="secondaryLightColor">#66FFA6</color>
-    <color name="secondaryDarkColor">#00B248</color>
-    <color name="background">#F5F5F5</color>
+    <color name="primaryColor">#FFD166</color> <!-- Soft Yellow -->
+    <color name="primaryLightColor">#FFE69A</color>
+    <color name="primaryDarkColor">#CAA53D</color>
+    <color name="secondaryColor">#06D6A0</color>
+    <color name="secondaryLightColor">#99E8C2</color>
+    <color name="secondaryDarkColor">#04916E</color>
+    <color name="background">#FFFFE5</color>
 
 </resources>

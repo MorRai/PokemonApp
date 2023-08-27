@@ -31,6 +31,7 @@ class PokemonsRxAdapter(
     }
 
     companion object {
+        // DiffUtil callback to efficiently update the RecyclerView items
         private val DIFF_UTIL = object : DiffUtil.ItemCallback<Pokemon>() {
             override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
                 return oldItem == newItem

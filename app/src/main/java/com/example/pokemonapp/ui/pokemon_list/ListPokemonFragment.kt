@@ -18,11 +18,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ListPokemonFragment : Fragment() {
-
 
     private var _binding: FragmentListPokemonBinding? = null
     private val binding
@@ -33,7 +33,7 @@ class ListPokemonFragment : Fragment() {
     private val viewModel by viewModel<PokemonsListViewModel>()
 
     private val mDisposable = CompositeDisposable()
-    private lateinit var networkObserver: NetworkConnectivityObserver
+    private val networkObserver: NetworkConnectivityObserver by inject()
 
     // Inflates the fragment's view and returns the root view
     override fun onCreateView(
@@ -83,7 +83,6 @@ class ListPokemonFragment : Fragment() {
                 }
             }
 
-            networkObserver = NetworkConnectivityObserver(requireContext())
             mDisposable.add(
                 networkObserver.observeConnectivityStatus()
                     .filter { isConnected -> isConnected }
@@ -97,11 +96,8 @@ class ListPokemonFragment : Fragment() {
                     }
                     .subscribe()
             )
-
-
         }
     }
-
 
     private fun isVisibleProgressBar(visible: Boolean) {
         binding.paginationProgressBar.isVisible = visible
@@ -117,6 +113,5 @@ class ListPokemonFragment : Fragment() {
         mDisposable.dispose()
         super.onDestroy()
     }
-
 
 }

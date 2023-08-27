@@ -22,6 +22,7 @@ internal class PokemonRepositoryImpl(
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
 ) : PokemonRepository {
+    //Fetches paginated Pokemon data
     override fun getPokemon(): Flowable<PagingData<Pokemon>> {
         return pokemonPager.flowable
             .map { pagingData ->
@@ -29,25 +30,23 @@ internal class PokemonRepositoryImpl(
             }
     }
 
+    //Fetches detailed information about a specific Pokemon by its ID
     override fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>> {
         return pokemonDatabase.pokemonDao().getPokemon(pokemonId)
             .subscribeOn(Schedulers.io())
             .map { pokemonEntity ->
-                // Преобразовать PokemonEntity в Response.Success<Pokemon>
-                 Response.Success(pokemonEntity.toDomainModels()) as Response<Pokemon>
+                Response.Success(pokemonEntity.toDomainModels()) as Response<Pokemon>
             }
             .onErrorResumeNext {
-                // Попробовать получить данные из Retrofit
+                // Try to fetch data from Retrofit in case of error
                 val retrofitFlowable = pokemonService.getPokemon(pokemonId)
                     .map { pokemonDTO ->
-                        // Преобразовать PokemonDTO в Response.Success<Pokemon>
-                        Response.Success(pokemonDTO.toDomainModel())as Response<Pokemon>
+                        Response.Success(pokemonDTO.toDomainModel()) as Response<Pokemon>
                     }
                     .onErrorReturn { e ->
-                        // Вернуть Response.Failure в случае ошибки
+                        // Return Response.Failure in case of error
                         Response.Failure(e)
                     }
-
                 retrofitFlowable
             }
 
