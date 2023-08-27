@@ -22,6 +22,10 @@ class PokemonsListViewModel(private val getPokemonsUseCase: GetPokemonsUseCase) 
     // Exposed observable for observing view state changes.
     val viewState: Observable<Response<PagingData<Pokemon>>> = _viewState.hide()
 
+
+    init {
+        processIntent(ListPokemonIntent.InitialLoad)
+    }
     //как то не особо mvi, но какой-то интерактивности от пользователя нет, ибо загрузка сразу по приходу на экран
     fun processIntent(intent: ListPokemonIntent) {
         when (intent) {
