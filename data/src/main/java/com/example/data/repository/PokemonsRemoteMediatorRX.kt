@@ -112,6 +112,7 @@ internal class PokemonsRemoteMediatorRX(
             if (page == INVALID_PAGE) {
                 Single.just(MediatorResult.Success(endOfPaginationReached = true) as MediatorResult)
             } else {
+                Log.e("page", page.toString())
                 // Load data from remote API
                 pokemonService.getPokemons(
                     offset = (page - 1) * pageSize,
@@ -130,7 +131,6 @@ internal class PokemonsRemoteMediatorRX(
                         }
                     }.flatMap { pokemonList ->
                         val endOfPaginationReached = pokemonList.isEmpty()
-                        Log.e("page", endOfPaginationReached.toString())
                         // Handle data insertion into database
                         if (loadType == LoadType.REFRESH) {
                             pokemonDatabase.pokemonRemoteKeysDao().clearRemoteKeys()

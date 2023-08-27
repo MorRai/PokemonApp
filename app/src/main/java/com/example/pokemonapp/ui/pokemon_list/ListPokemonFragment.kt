@@ -1,7 +1,6 @@
 package com.example.pokemonapp.ui.pokemon_list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.domain.model.Response
 import com.example.pokemonapp.adapter.PokemonsRxAdapter
 import com.example.pokemonapp.databinding.FragmentListPokemonBinding
 import com.example.pokemonapp.util.NetworkConnectivityObserver
@@ -51,6 +51,7 @@ class ListPokemonFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+            // Create an adapter for displaying Pokemons in a RecyclerView
             val adapter = PokemonsRxAdapter(requireContext()) { pokemon ->
                findNavController().navigate(
                    ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(pokemon.id)
@@ -58,31 +59,40 @@ class ListPokemonFragment : Fragment() {
             }
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-
-            mDisposable.add(viewModel.pokemonPagingDataFlow.observeOn(AndroidSchedulers.mainThread()).subscribe {
-                adapter.submitData(lifecycle, it)
-           }
-            )
-
-
+            // Add a load state listener to the adapter
             adapter.addLoadStateListener { loadState ->
                 if (loadState.refresh is LoadState.Loading) {
                     isVisibleProgressBar(true)
                 } else {
                     isVisibleProgressBar(false)
-                     when {
+                    when {
                         loadState.prepend is LoadState.Error -> loadState.prepend as LoadState.Error
                         loadState.append is LoadState.Error -> loadState.append as LoadState.Error
                         loadState.refresh is LoadState.Error -> loadState.refresh as LoadState.Error
                         else -> null
                     }?.let {
                         isVisibleProgressBar(false)
-                        Toast.makeText(activity, it.error.message, Toast.LENGTH_LONG).show()
+                        showErrorToast(it.error)
                     }
                 }
             }
 
+            // Observe the view model's view state and update UI accordingly
+            mDisposable.add(viewModel.viewState.observeOn(AndroidSchedulers.mainThread()).subscribe { viewState ->
+                when (viewState) {
+                    is Response.Loading -> isVisibleProgressBar(true)
+                    is Response.Success -> {
+                        isVisibleProgressBar(false)
+                        adapter.submitData(lifecycle, viewState.data)
+                    }
+                    is Response.Failure -> {
+                        isVisibleProgressBar(false)
+                        showErrorToast(viewState.e)
+                    }
+                }
+            }
+            )
+            // Observe network connectivity and trigger data reload on reconnection
             mDisposable.add(
                 networkObserver.observeConnectivityStatus()
                     .filter { isConnected -> isConnected }
@@ -90,7 +100,7 @@ class ListPokemonFragment : Fragment() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMapCompletable {
                         Completable.fromAction {
-                            Log.e("page", "ыефкпкеркеркерк")
+                            // Retry loading data when network connectivity is restored
                             adapter.retry()
                         }
                     }
@@ -99,8 +109,15 @@ class ListPokemonFragment : Fragment() {
         }
     }
 
+    // Toggle the visibility of the progress bar
     private fun isVisibleProgressBar(visible: Boolean) {
         binding.paginationProgressBar.isVisible = visible
+    }
+
+    // Show an error toast with the provided error message
+    private fun showErrorToast(error: Throwable) {
+        isVisibleProgressBar(false)
+        Toast.makeText(activity, error.message, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {
