@@ -9,19 +9,38 @@ koin-version = "3.3.2"
 retrofit-version = "2.9.0"
 androidx-navigation = "2.4.2"
 androidx-lifecycle = "2.4.1"
+
 coil-version = "1.4.0"
-swiperefreshlayout-version = "1.1.0"
-androidx-core = "1.7.0"
-androidx-appcompat = "1.4.1"
-android-material = "1.6.0"
+androidx-core = "1.8.0"
+androidx-appcompat = "1.6.1"
+android-material = "1.9.0"
 androidx-constraintlayout = "2.1.4"
 junit-version = "4.13.2"
-androidx-test-ext = "1.1.3"
-androidx-test-espresso = "3.4.0"
-kotlinx-coroutine = "1.5.2"
+androidx-test-ext = "1.1.5"
+androidx-test-espresso = "3.5.01"
+rxjava = "3.1.2"
+paging-common = "3.2.0"
+rxjava-rxandroid = "3.0.0"
+retrofit2-adapter-rxjava3 = "2.9.0"
+
+
+
 
 
 [libraries]
+
+squareup-retrofit2-adapter-rxjava3  = {module ="com.squareup.retrofit2:adapter-rxjava3", version.ref = "retrofit2-adapter-rxjava3"}
+
+androidx-room-paging  = {module ="androidx.room:room-paging", version.ref = "androidx-room"}
+androidx-room-rxjava3  = {module ="androidx.room:room-rxjava3", version.ref = "androidx-room"}
+
+androidx-paging-rxjava3  = {module ="androidx.paging:paging-rxjava3", version.ref = "paging-common"}
+androidx-paging-runtime  = {module ="androidx.paging:paging-runtime", version.ref = "paging-common"}
+
+androidx-paging-common  = {module ="androidx.paging:paging-common", version.ref = "paging-common"}
+
+reactivex-rxjava3-rxandroid  = {module ="io.reactivex.rxjava3:rxandroid", version.ref = "rxjava-rxandroid"}
+reactivex-rxjava3-rxjava  = {module ="io.reactivex.rxjava3:rxjava", version.ref = "rxjava"}
 
 androidx-room-runtime  = {module = "androidx.room:room-runtime", version.ref = "androidx-room"}
 androidx-room-ktx  = {module = "androidx.room:room-ktx", version.ref = "androidx-room"}
@@ -39,21 +58,14 @@ retrofit-retrofit = {module = "com.squareup.retrofit2:retrofit", version.ref = "
 retrofit-converter-gson  = {module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit-version"}
 
 koin-android  = {module = "io.insert-koin:koin-android", version.ref = "koin-version"}
+koin-core  = {module = "io.insert-koin:koin-core", version.ref = "koin-version"}
 
-androidx-swiperefreshlayout  = {module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout-version"}
-
+androidx-constraintlayout= {module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout"}
 androidx_core = {module = "androidx.core:core-ktx", version.ref = "androidx-core"}
 androidx-appcompat = {module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat"}
 android-material= {module = "com.google.android.material:material", version.ref = "android-material"}
-
-androidx-constraintlayout= {module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout"}
-
 junit = {module = "junit:junit", version.ref = "junit-version"}
-
 androidx-test-ext= {module = "androidx.test.ext:junit", version.ref = "androidx-test-ext"}
-
-kotlinx-coroutine = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine"}
-
 androidx-test-espresso= {module = "androidx.test.espresso:espresso-core", version.ref = "androidx-test-espresso"}
 
 [bundles]

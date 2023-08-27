@@ -57,6 +57,7 @@ class ListPokemonFragment : Fragment() {
                    ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(pokemon.id)
                )
             }
+
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             // Add a load state listener to the adapter
