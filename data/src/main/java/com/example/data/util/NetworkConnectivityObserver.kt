@@ -5,23 +5,22 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class NetworkConnectivityObserver(context: Context) {
     // ConnectivityManager instance to manage network connectivity.
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    // BehaviorSubject to emit connectivity status changes.
-    private val connectivityStatusSubject = BehaviorSubject.createDefault(isConnected())
+    // MutableStateFlow to emit connectivity status changes.
+    private val connectivityStatusFlow = MutableStateFlow(isConnected())
 
-    fun observeConnectivityStatus(): Observable<Boolean> {
-        return connectivityStatusSubject.distinctUntilChanged()
-    }
+    // Flow to observe connectivity status changes.
+    fun observeConnectivityStatus() = connectivityStatusFlow.asStateFlow()
 
     // Checks if the device is currently connected to the internet.
-     fun isConnected(): Boolean {
+    private fun isConnected(): Boolean {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
         return networkCapabilities != null &&
@@ -36,13 +35,13 @@ class NetworkConnectivityObserver(context: Context) {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 // Emit a true value indicating network availability.
-                connectivityStatusSubject.onNext(true)
+                connectivityStatusFlow.value = true
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
                 // Emit a false value indicating network unavailability.
-                connectivityStatusSubject.onNext(false)
+                connectivityStatusFlow.value = false
             }
         }
         // Register the network callback to listen for changes.
