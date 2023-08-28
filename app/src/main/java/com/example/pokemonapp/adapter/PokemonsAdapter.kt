@@ -42,8 +42,6 @@ class PokemonsAdapter(
             }
         }
     }
-
-
 }
 
 class PokemonViewHolder(
@@ -51,11 +49,7 @@ class PokemonViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     // Binds a pokemon item to the view holder's views and sets click listener
     fun bind(item: Pokemon, onItemClicked: (Pokemon) -> Unit) {
-        try {
-            binding.imagePokemon.load(item.image)
-        }catch (e:Exception){
-
-        }
+        binding.imagePokemon.load(item.image)
         binding.pokemonName.text = item.name
         itemView.setOnClickListener {
             onItemClicked(item)

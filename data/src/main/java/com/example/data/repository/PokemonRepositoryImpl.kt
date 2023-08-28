@@ -14,11 +14,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 internal class PokemonRepositoryImpl(
-   // private val pokemonPager: Pager<Int, PokemonEntity>,
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
 ) : PokemonRepository {
-
 
     //Fetches detailed information about a specific Pokemon by its ID
     override fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>> {
@@ -44,15 +42,15 @@ internal class PokemonRepositoryImpl(
 
 
     ///////////////////////////////////////////////////////////////////
-    // Метод для загрузки покемонов по указанной странице без библиотеки
-    private val pageSize  = 20
+    // Method for loading Pokemon based on the specified page without using  libraries
     override fun loadPokemons(page: Int): Single<Response<List<Pokemon>>> {
-        val offset = (page - 1) * pageSize
-        return pokemonService.getPokemons(offset, pageSize)
+        val pageSize = 20
+        val offset = (page - 1) * pageSize// Calculate the offset on the page
+        return pokemonService.getPokemons(offset, pageSize)// Request Pokemon from the server
             .flatMap { pokemonsDTO ->
                 val pokemonSingleList = pokemonsDTO.results.map { pokemonResponse ->
                     val id = pokemonResponse.url.split("/").let { it[it.size - 2].toInt() }
-                    pokemonService.getPokemon(id)
+                    pokemonService.getPokemon(id) // Request Pokemon information by ID
                 }
                 Single.zip(pokemonSingleList) { pokemons ->
                     pokemons.map { it as PokemonDTO }
@@ -60,7 +58,9 @@ internal class PokemonRepositoryImpl(
             }
             .flatMap { pokemonList ->
                 val entities = pokemonList.toDomainModel()
-                pokemonDatabase.pokemonDao().insert(entities.toEntityModels()).subscribeOn(Schedulers.io()).subscribe()
+                // Insert entities into the local database and return a Single
+                pokemonDatabase.pokemonDao().insert(entities.toEntityModels())
+                    .subscribeOn(Schedulers.io()).subscribe()
                 Single.just(entities)
             }
             .map<Response<List<Pokemon>>> {
@@ -72,10 +72,10 @@ internal class PokemonRepositoryImpl(
             .subscribeOn(Schedulers.io())
     }
 
-    // Метод для получения покемонов из локальной базы данных
+    // Method for retrieving Pokemon from the local database
     override fun getPokemonsFromDatabase(): Single<Response<List<Pokemon>>> {
         return pokemonDatabase.pokemonDao().getPokemons()
-            .map{ it.map { it.toDomainModels() } }
+            .map { it.map { it.toDomainModels() } }
             .map<Response<List<Pokemon>>> {
                 Response.Success(it)
             }
@@ -85,5 +85,4 @@ internal class PokemonRepositoryImpl(
             .subscribeOn(Schedulers.io())
 
     }
-
 }

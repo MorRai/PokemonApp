@@ -1,7 +1,6 @@
 package com.example.pokemonapp.ui.pokemon_list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +51,7 @@ class ListPokemonFragment : Fragment() {
         with(binding) {
             // Create an adapter for displaying Pokemons in a RecyclerView
             val adapter = PokemonsAdapter(requireContext()) { pokemon ->
+                // Handle click event and navigate to the detail fragment
                 findNavController().navigate(
                     ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(
                         pokemon.id
@@ -60,14 +60,13 @@ class ListPokemonFragment : Fragment() {
             }
             adapter.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-
+            // Set the adapter and layout manager for the RecyclerView
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-
+            // Attach a pagination scroll listener to the RecyclerView
             recyclerView.addPaginationScrollListener(
                 layoutManager = recyclerView.layoutManager as LinearLayoutManager,
-                itemsToLoad = 20
             ) {
                 viewModel.processIntent(ListPokemonIntent.PageLoad)
             }
@@ -82,10 +81,8 @@ class ListPokemonFragment : Fragment() {
                             is Response.Success -> {
                                 isVisibleProgressBar(false)
                                 adapter.submitList(viewState.data)
-                                Log.e("page", viewState.data.toString())
                             }
                             is Response.Failure -> {
-                                Log.e("page", "провал гдето")
                                 isVisibleProgressBar(false)
                                 showErrorToast(viewState.e)
                             }
@@ -98,7 +95,6 @@ class ListPokemonFragment : Fragment() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    // Вызываем нужную логику при доступности сети
                     viewModel.processIntent(ListPokemonIntent.PageLoad)
                 })
         }

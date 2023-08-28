@@ -23,23 +23,23 @@ class PokemonsListViewModel(
     private val networkObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
 
+    // Disposable to manage RxJava subscriptions
     private val mDisposable = CompositeDisposable()
-
-
+    // Subject to emit network connectivity status changes
     private val networkStatusSubject = PublishSubject.create<Unit>()
     val networkStatusObservable: Observable<Unit> = networkStatusSubject
-
+    // Subject to hold the current view state
     private val _viewState = BehaviorSubject.create<Response<List<Pokemon>>>()
-
-    // Exposed observable for observing view state changes.
     val viewState: Observable<Response<List<Pokemon>>> = _viewState.hide()
-
+    // List to store cached pokemons and other variables
     private val cachedPokemons: MutableList<Pokemon> = mutableListOf()
     private var currentPage = 1
     private var isPageLoading = false // Флаг для отслеживания состояния загрузки
 
     init {
+        // Initialize by loading initial data
         processIntent(ListPokemonIntent.InitialLoad)
+        // Observe network connectivity changes and emit events on connection
         mDisposable.add(networkObserver.observeConnectivityStatus()
             .filter { isConnected -> isConnected }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).subscribe {
@@ -48,7 +48,7 @@ class PokemonsListViewModel(
 
         )
     }
-
+    // Process user intent
     fun processIntent(intent: ListPokemonIntent) {
         when (intent) {
             is ListPokemonIntent.InitialLoad -> loadCachedPokemons()
@@ -56,7 +56,7 @@ class PokemonsListViewModel(
         }
     }
 
-
+    // Load cached pokemons from local storage
     @SuppressLint("CheckResult")
     private fun loadCachedPokemons() {
         _viewState.onNext(Response.Loading)
@@ -75,22 +75,22 @@ class PokemonsListViewModel(
                 refreshCache()
             })
     }
-
+    // Refresh the cache with new data from API
     @SuppressLint("CheckResult")
     private fun refreshCache() {
         if (!networkObserver.isConnected() || isPageLoading) {
-            // Пропускаем повторный вызов, если загрузка уже идет или нет интернета
+            // Skip the call if already loading or no internet connection
             return
         }
         _viewState.onNext(Response.Loading)
         Log.e("page", "load+$currentPage")
-        isPageLoading = true // Устанавливаем флаг в true перед началом загрузки
+        isPageLoading = true // Set loading flag to true before starting
+        // Fetch new data from API
         loadPokemonUseCase.invoke(currentPage).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).subscribe({ response ->
                 if (response is Response.Success) {
                     val newPokemons = response.data
-                    Log.e("page", newPokemons.toString())
-                    // Обновляем кэшированные данные, если id совпадает
+                    // Update cached data if ID matches, otherwise add new data
                     newPokemons.forEach { newPokemon ->
                         val existingPokemonIndex =
                             cachedPokemons.indexOfFirst { it.id == newPokemon.id }
@@ -106,13 +106,14 @@ class PokemonsListViewModel(
                 } else if (response is Response.Failure) {
                     _viewState.onNext(Response.Failure(response.e))
                 }
-                isPageLoading = false
+                isPageLoading = false // Set loading flag to false after completion
             }, { error ->
                 _viewState.onNext(Response.Failure(error))
-                isPageLoading = false
+                isPageLoading = false  // Set loading flag to false after completion
             })
     }
 
+    // Clear disposable subscriptions when ViewModel is no longer used
     override fun onCleared() {
         mDisposable.clear()
         super.onCleared()
