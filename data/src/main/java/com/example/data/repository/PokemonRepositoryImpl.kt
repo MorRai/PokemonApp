@@ -6,11 +6,9 @@ import com.example.data.mapper.toDomainModel
 import com.example.data.mapper.toDomainModels
 import com.example.data.mapper.toEntityModels
 import com.example.data.model.PokemonDTO
-import com.example.data.model.PokemonEntity
 import com.example.domain.model.Pokemon
 import com.example.domain.model.Response
 import com.example.domain.repository.PokemonRepository
-import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -20,13 +18,7 @@ internal class PokemonRepositoryImpl(
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
 ) : PokemonRepository {
-    //Fetches paginated Pokemon data
-   /* override fun getPokemon(): Flowable<PagingData<Pokemon>> {
-        return pokemonPager.flowable
-            .map { pagingData ->
-                pagingData.map { it.toDomainModels() }
-            }
-    }*/
+
 
     //Fetches detailed information about a specific Pokemon by its ID
     override fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>> {

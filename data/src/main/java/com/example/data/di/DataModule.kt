@@ -9,6 +9,5 @@ val dataModule = module {
         networkModule,
         useCaseModule,
         networkCheckModule
-       // pokemonMediatorModule
         )
 }

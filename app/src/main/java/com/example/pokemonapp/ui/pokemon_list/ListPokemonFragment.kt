@@ -16,11 +16,9 @@ import com.example.pokemon_app.extension.addPaginationScrollListener
 import com.example.pokemonapp.Intents.ListPokemonIntent
 import com.example.pokemonapp.adapter.PokemonsAdapter
 import com.example.pokemonapp.databinding.FragmentListPokemonBinding
-import com.example.data.util.NetworkConnectivityObserver
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -35,7 +33,6 @@ class ListPokemonFragment : Fragment() {
     private val viewModel by viewModel<PokemonsListViewModel>()
 
     private val mDisposable = CompositeDisposable()
-    private val networkObserver: NetworkConnectivityObserver by inject()
 
     // Inflates the fragment's view and returns the root view
     override fun onCreateView(
@@ -55,11 +52,14 @@ class ListPokemonFragment : Fragment() {
         with(binding) {
             // Create an adapter for displaying Pokemons in a RecyclerView
             val adapter = PokemonsAdapter(requireContext()) { pokemon ->
-               findNavController().navigate(
-                   ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(pokemon.id)
-               )
+                findNavController().navigate(
+                    ListPokemonFragmentDirections.actionListPokemonFragmentToDetailPokemonFragment(
+                        pokemon.id
+                    )
+                )
             }
-            adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+            adapter.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -73,23 +73,25 @@ class ListPokemonFragment : Fragment() {
             }
 
 
-
             // Observe the view model's view state and update UI accordingly
-            mDisposable.add(viewModel.viewState.observeOn(AndroidSchedulers.mainThread()).subscribe { viewState ->
-                when (viewState) {
-                    is Response.Loading -> isVisibleProgressBar(true)
-                    is Response.Success -> {
-                        isVisibleProgressBar(false)
-                        adapter.submitList(viewState.data)
-                        Log.e("page",viewState.data.toString())
-                    }
-                    is Response.Failure -> {
-                        isVisibleProgressBar(false)
-                        showErrorToast(viewState.e)
-                    }
-                    else -> {}
-                }
-            } )
+            mDisposable.add(
+                viewModel.viewState.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { viewState ->
+                        when (viewState) {
+                            is Response.Loading -> isVisibleProgressBar(true)
+                            is Response.Success -> {
+                                isVisibleProgressBar(false)
+                                adapter.submitList(viewState.data)
+                                Log.e("page", viewState.data.toString())
+                            }
+                            is Response.Failure -> {
+                                Log.e("page", "провал гдето")
+                                isVisibleProgressBar(false)
+                                showErrorToast(viewState.e)
+                            }
+                            else -> {}
+                        }
+                    })
 
             // Observe network connectivity and trigger reload on reconnection
             mDisposable.add(viewModel.networkStatusObservable

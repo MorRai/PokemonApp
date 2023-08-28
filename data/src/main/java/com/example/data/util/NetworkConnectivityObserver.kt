@@ -21,7 +21,7 @@ class NetworkConnectivityObserver(context: Context) {
     }
 
     // Checks if the device is currently connected to the internet.
-    private fun isConnected(): Boolean {
+     fun isConnected(): Boolean {
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
         return networkCapabilities != null &&

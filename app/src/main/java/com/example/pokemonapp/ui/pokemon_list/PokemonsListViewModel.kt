@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 class PokemonsListViewModel(
     private val loadPokemonUseCase: LoadPokemonUseCase,
     private val getPokemonsFromCache: GetPokemonsFromCache,
-    networkObserver: NetworkConnectivityObserver
+    private val networkObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
 
     private val mDisposable = CompositeDisposable()
@@ -30,6 +30,7 @@ class PokemonsListViewModel(
     val networkStatusObservable: Observable<Unit> = networkStatusSubject
 
     private val _viewState = BehaviorSubject.create<Response<List<Pokemon>>>()
+
     // Exposed observable for observing view state changes.
     val viewState: Observable<Response<List<Pokemon>>> = _viewState.hide()
 
@@ -39,18 +40,15 @@ class PokemonsListViewModel(
 
     init {
         processIntent(ListPokemonIntent.InitialLoad)
-        mDisposable.add(
-            networkObserver.observeConnectivityStatus()
-                .filter { isConnected -> isConnected }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    networkStatusSubject.onNext(Unit)
-                }
+        mDisposable.add(networkObserver.observeConnectivityStatus()
+            .filter { isConnected -> isConnected }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                networkStatusSubject.onNext(Unit)
+            }
+
         )
     }
 
-    //как то не особо mvi, но какой-то интерактивности от пользователя нет, ибо загрузка сразу по приходу на экран
     fun processIntent(intent: ListPokemonIntent) {
         when (intent) {
             is ListPokemonIntent.InitialLoad -> loadCachedPokemons()
@@ -62,11 +60,8 @@ class PokemonsListViewModel(
     @SuppressLint("CheckResult")
     private fun loadCachedPokemons() {
         _viewState.onNext(Response.Loading)
-        Log.e("page","loadCachedPokemons")
-        getPokemonsFromCache.invoke()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ cachedPokemonsResponse ->
+        getPokemonsFromCache.invoke().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({ cachedPokemonsResponse ->
                 if (cachedPokemonsResponse is Response.Success && cachedPokemonsResponse.data.isNotEmpty()) {
                     _viewState.onNext(cachedPokemonsResponse)
                     this.cachedPokemons.clear()
@@ -83,42 +78,39 @@ class PokemonsListViewModel(
 
     @SuppressLint("CheckResult")
     private fun refreshCache() {
-        if (isPageLoading) {
-            // Пропускаем повторный вызов, если загрузка уже идет
+        if (!networkObserver.isConnected() || isPageLoading) {
+            // Пропускаем повторный вызов, если загрузка уже идет или нет интернета
             return
         }
         _viewState.onNext(Response.Loading)
         Log.e("page", "load+$currentPage")
         isPageLoading = true // Устанавливаем флаг в true перед началом загрузки
-        loadPokemonUseCase.invoke(currentPage)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { response ->
-                    if (response is Response.Success) {
-                        val newPokemons = response.data
-                        Log.e("page", newPokemons.toString())
-                        // Обновляем кэшированные данные, если id совпадает
-                        newPokemons.forEach { newPokemon ->
-                            val existingPokemonIndex =
-                                cachedPokemons.indexOfFirst { it.id == newPokemon.id }
-                            if (existingPokemonIndex >= 0) {
-                                cachedPokemons[existingPokemonIndex] = newPokemon
-                            }else{ cachedPokemons.add(newPokemon)}
+        loadPokemonUseCase.invoke(currentPage).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({ response ->
+                if (response is Response.Success) {
+                    val newPokemons = response.data
+                    Log.e("page", newPokemons.toString())
+                    // Обновляем кэшированные данные, если id совпадает
+                    newPokemons.forEach { newPokemon ->
+                        val existingPokemonIndex =
+                            cachedPokemons.indexOfFirst { it.id == newPokemon.id }
+                        if (existingPokemonIndex >= 0) {
+                            cachedPokemons[existingPokemonIndex] = newPokemon
+                        } else {
+                            cachedPokemons.add(newPokemon)
                         }
-                        _viewState.onNext(Response.Success(cachedPokemons))
-
-                        currentPage++
-                    }else if(response is Response.Failure){
-                        _viewState.onNext(Response.Failure(response.e))
                     }
-                    isPageLoading = false
-                },
-                { error ->
-                    _viewState.onNext(Response.Failure(error))
-                    isPageLoading = false
+                    _viewState.onNext(Response.Success(cachedPokemons))
+
+                    currentPage++
+                } else if (response is Response.Failure) {
+                    _viewState.onNext(Response.Failure(response.e))
                 }
-            )
+                isPageLoading = false
+            }, { error ->
+                _viewState.onNext(Response.Failure(error))
+                isPageLoading = false
+            })
     }
 
     override fun onCleared() {
