@@ -5,22 +5,20 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.data.model.PokemonRemoteKeys
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
 import java.util.*
 
 @Dao
 interface PokemonRemoteKeysDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(remoteKey: List<PokemonRemoteKeys>): Completable
+    suspend fun insertAll(remoteKey: List<PokemonRemoteKeys>)
 
     @Query("Select * From pokemon_remote_key Where pokemon_id = :id")
-    fun getRemoteKeyByPokemonID(id: Int): Single<Optional<PokemonRemoteKeys>>
+    suspend fun getRemoteKeyByPokemonID(id: Int): PokemonRemoteKeys?
 
     @Query("Delete From pokemon_remote_key")
-    fun clearRemoteKeys() : Completable
+    suspend fun clearRemoteKeys()
 
     @Query("Select created_at From pokemon_remote_key Order By created_at DESC LIMIT 1")
-    fun getCreationTime(): Single<Optional<Long>>
+    suspend fun getCreationTime(): Long?
 
 }

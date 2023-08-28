@@ -1,28 +1,26 @@
 package com.example.data.database
 
+import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.data.model.PokemonEntity
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-
 @Dao
 internal interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(pokemons: List<PokemonEntity>): Completable
+    suspend fun insert(pokemons: List<PokemonEntity>)
 
     @Update
-    fun update(pokemon: PokemonEntity): Completable
+    suspend fun update(pokemon: PokemonEntity)
 
     @Delete
-    fun delete(pokemon: PokemonEntity): Completable
+    suspend fun delete(pokemon: PokemonEntity)
 
     @Query("SELECT * from pokemons_table WHERE id = :id")
-    fun getPokemon(id: Int): Single<PokemonEntity>
+    suspend fun getPokemon(id: Int): PokemonEntity
 
     @Query("SELECT * from pokemons_table")
-    fun getPokemons(): Single<List<PokemonEntity>>
+    fun getPokemons(): PagingSource<Int, PokemonEntity>
 
     @Query("Delete From pokemons_table")
-    fun clearAllPokemons(): Completable
+    suspend fun clearAllPokemons()
 
 }
