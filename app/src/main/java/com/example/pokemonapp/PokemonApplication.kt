@@ -17,7 +17,6 @@ class PokemonApplication : Application() {
             modules(
                 dataModule,
                 viewModelsModule,
-                //networkCheckModule
             )
         }
     }

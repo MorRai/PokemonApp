@@ -36,11 +36,35 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        compose  = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.0"
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
+
+    //для компоус
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation ("androidx.paging:paging-compose:1.0.0-alpha17")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("io.insert-koin:koin-androidx-compose:3.4.1")
+    implementation ("androidx.navigation:navigation-compose:2.5.3")
+
+    implementation ("androidx.compose.ui:ui:1.4.3")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    implementation ("androidx.compose.material3:material3:1.0.0-alpha11")
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.4.3")
+    debugImplementation ("androidx.compose.ui:ui-tooling:1.4.3")
+    debugImplementation ("androidx.compose.ui:ui-test-manifest:1.4.3")
+
 
     implementation(project(":domain"))
     implementation(project(":data"))

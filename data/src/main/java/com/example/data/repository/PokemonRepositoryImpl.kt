@@ -20,11 +20,11 @@ import kotlinx.coroutines.withContext
 internal class PokemonRepositoryImpl(
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
-    private val recipePager: Pager<Int, PokemonEntity>,
+    private val pokemonPager: Pager<Int, PokemonEntity>,
 ) : PokemonRepository {
 
     override fun getPokemons(): Flow<PagingData<Pokemon>> {
-        return recipePager.flow.map { pagingData ->
+        return pokemonPager.flow.map { pagingData ->
             pagingData.map { it.toDomainModels() }
         }
     }
