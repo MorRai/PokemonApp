@@ -1,6 +1,5 @@
 package com.example.data.database
 
-import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.data.model.PokemonEntity
 import io.reactivex.rxjava3.core.Completable
@@ -21,7 +20,7 @@ internal interface PokemonDao {
     fun getPokemon(id: Int): Single<PokemonEntity>
 
     @Query("SELECT * from pokemons_table")
-    fun getPokemons(): PagingSource<Int,PokemonEntity>
+    fun getPokemons(): Single<List<PokemonEntity>>
 
     @Query("Delete From pokemons_table")
     fun clearAllPokemons(): Completable

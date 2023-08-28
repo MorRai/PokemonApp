@@ -16,7 +16,7 @@ import com.example.domain.model.Response
 import com.example.pokemonapp.Intents.PokemonDetailIntent
 import com.example.pokemonapp.R
 import com.example.pokemonapp.databinding.FragmentDetailPokemonBinding
-import com.example.pokemonapp.util.NetworkConnectivityObserver
+import com.example.data.util.NetworkConnectivityObserver
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.CompositeDisposable

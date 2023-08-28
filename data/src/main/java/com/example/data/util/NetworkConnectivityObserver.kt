@@ -1,4 +1,4 @@
-package com.example.pokemonapp.util
+package com.example.data.util
 
 import android.content.Context
 import android.net.ConnectivityManager

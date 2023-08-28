@@ -8,7 +8,7 @@ import com.example.data.repository.PokemonsRemoteMediatorRX
 
 import org.koin.dsl.module
 
-internal val pokemonMediatorModule = module {
+/*internal val pokemonMediatorModule = module {
     single{
         @OptIn(ExperimentalPagingApi::class)
         Pager(
@@ -22,4 +22,4 @@ internal val pokemonMediatorModule = module {
         remoteMediator = PokemonsRemoteMediatorRX(get(), get()),
     )
     }
-}
+}*/

@@ -1,13 +1,11 @@
 package com.example.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingData
-import androidx.paging.map
-import androidx.paging.rxjava3.flowable
 import com.example.data.api.PokemonApi
 import com.example.data.database.PokemonDatabase
 import com.example.data.mapper.toDomainModel
 import com.example.data.mapper.toDomainModels
+import com.example.data.mapper.toEntityModels
+import com.example.data.model.PokemonDTO
 import com.example.data.model.PokemonEntity
 import com.example.domain.model.Pokemon
 import com.example.domain.model.Response
@@ -18,17 +16,17 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 internal class PokemonRepositoryImpl(
-    private val pokemonPager: Pager<Int, PokemonEntity>,
+   // private val pokemonPager: Pager<Int, PokemonEntity>,
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
 ) : PokemonRepository {
     //Fetches paginated Pokemon data
-    override fun getPokemon(): Flowable<PagingData<Pokemon>> {
+   /* override fun getPokemon(): Flowable<PagingData<Pokemon>> {
         return pokemonPager.flowable
             .map { pagingData ->
                 pagingData.map { it.toDomainModels() }
             }
-    }
+    }*/
 
     //Fetches detailed information about a specific Pokemon by its ID
     override fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>> {
@@ -49,6 +47,50 @@ internal class PokemonRepositoryImpl(
                     }
                 retrofitFlowable
             }
+
+    }
+
+
+    ///////////////////////////////////////////////////////////////////
+    // Метод для загрузки покемонов по указанной странице без библиотеки
+    private val pageSize  = 20
+    override fun loadPokemons(page: Int): Single<Response<List<Pokemon>>> {
+        val offset = (page - 1) * pageSize
+        return pokemonService.getPokemons(offset, pageSize)
+            .flatMap { pokemonsDTO ->
+                val pokemonSingleList = pokemonsDTO.results.map { pokemonResponse ->
+                    val id = pokemonResponse.url.split("/").let { it[it.size - 2].toInt() }
+                    pokemonService.getPokemon(id)
+                }
+                Single.zip(pokemonSingleList) { pokemons ->
+                    pokemons.map { it as PokemonDTO }
+                }
+            }
+            .flatMap { pokemonList ->
+                val entities = pokemonList.toDomainModel()
+                pokemonDatabase.pokemonDao().insert(entities.toEntityModels()).subscribeOn(Schedulers.io()).subscribe()
+                Single.just(entities)
+            }
+            .map<Response<List<Pokemon>>> {
+                Response.Success(it)
+            }
+            .onErrorReturn { throwable ->
+                Response.Failure(throwable)
+            }
+            .subscribeOn(Schedulers.io())
+    }
+
+    // Метод для получения покемонов из локальной базы данных
+    override fun getPokemonsFromDatabase(): Single<Response<List<Pokemon>>> {
+        return pokemonDatabase.pokemonDao().getPokemons()
+            .map{ it.map { it.toDomainModels() } }
+            .map<Response<List<Pokemon>>> {
+                Response.Success(it)
+            }
+            .onErrorReturn { throwable ->
+                Response.Failure(throwable)
+            }
+            .subscribeOn(Schedulers.io())
 
     }
 
