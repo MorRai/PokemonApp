@@ -14,7 +14,7 @@ import com.example.data.model.PokemonRemoteKeys
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
-internal class PokemonsRemoteMediatorCor(
+internal class PokemonsRemoteMediator(
     private val pokemonService: PokemonApi,
     private val pokemonDatabase: PokemonDatabase,
 ) : RemoteMediator<Int, PokemonEntity>() {

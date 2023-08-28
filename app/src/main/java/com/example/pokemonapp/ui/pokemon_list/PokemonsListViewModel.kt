@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.data.util.NetworkConnectivityObserver
 import com.example.domain.model.Pokemon
 import com.example.domain.model.Response
-import com.example.domain.usecase.GetPokemonsFromCache
+import com.example.domain.usecase.GetPokemonsUseCase
 import com.example.domain.usecase.LoadPokemonUseCase
 import com.example.pokemonapp.Intents.ListPokemonIntent
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 
 class PokemonsListViewModel(
     private val loadPokemonUseCase: LoadPokemonUseCase,
-    private val getPokemonsFromCache: GetPokemonsFromCache,
+    private val getPokemonsFromCache: GetPokemonsUseCase,
     private val networkObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
 

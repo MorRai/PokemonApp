@@ -1,13 +1,11 @@
 package com.example.domain.repository
 
+import androidx.paging.PagingData
 import com.example.domain.model.Pokemon
 import com.example.domain.model.Response
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface PokemonRepository {
-    fun getPokemonDetail(pokemonId: Int): Single<Response<Pokemon>>
-
-    fun loadPokemons(page: Int): Single<Response<List<Pokemon>>>
-
-    fun getPokemonsFromDatabase(): Single<Response<List<Pokemon>>>
+    suspend fun getPokemonDetail(pokemonId: Int): Response<Pokemon>
+    fun getPokemons(): Flow<PagingData<Pokemon>>
 }
